@@ -1,0 +1,10 @@
+# Optional: run the Neuro SAN agent network IN-PROCESS (NEURO_SAN_MODE=direct).
+# Not needed for Demo Mode or for Streamlit Cloud.
+#     python -m pip install -r requirements-neuro-san.txt
+-r requirements.txt
+neuro-san>=0.6.84
+
+# Deliberate pin: streamlit needs protobuf <7, while neuro-san's grpcio-* extras
+# want >=7. The in-process session never starts gRPC, so <7 keeps both working.
+# `pip check` will still report the grpcio-* complaints; they are harmless here.
+protobuf<7

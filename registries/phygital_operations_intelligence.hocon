@@ -1,0 +1,238 @@
+# Phygital Operations Intelligence — Neuro SAN agent network
+#
+# Used by the Streamlit app (app.py) through services/neuro_san_client.py.
+# The app sends ONE message: the correlated operational timeline (digital work,
+# video, ERP, IoT) plus the JSON response contract. The frontman runs the six
+# specialists as a chain, each building on the previous findings, and returns a
+# single JSON object the app renders as the operational assessment and the
+# three decision horizons.
+#
+# LLM: Azure OpenAI. Credentials come from the environment (the app maps
+# AZURE_API_KEY / AZURE_ENDPOINT / DEPLOYMENT_NAME / API_VERSION onto the
+# AZURE_OPENAI_* variables neuro-san reads). No secrets in this file.
+{
+    "llm_config": {
+        "model_name": "azure-gpt-4o"
+    },
+
+    "metadata": {
+        "description": "Phygital Operations Intelligence: specialist agents interpret a correlated digital + physical + enterprise operational timeline for a tire service center and recommend day-of, planning and CapEx actions.",
+        "tags": ["demo", "phygital", "service-operations", "orchestration"]
+    },
+
+    "tools": [
+        {
+            "name": "phygital_operations_frontman",
+            "function": {
+                "description": """
+I analyse a correlated operational timeline from a tire service center and return
+one JSON assessment covering what is happening, why, the impact and what to do.
+"""
+            },
+            "instructions": """
+You are the orchestrator of a Phygital Operations Intelligence network for a tire
+and auto service center. The user message contains a correlated operational
+timeline (DIGITAL work, VIDEO observations, ERP and IoT events) and a JSON
+response contract.
+
+Run the six specialists in THREE WAVES. Within a wave, issue all calls together
+in ONE turn as parallel tool calls; wait for a wave to finish before the next.
+
+  Wave 1 (inquiry = the operational timeline text from the user message):
+    observation_agent, correlation_agent, operational_state_agent
+  Wave 2 (inquiry = the timeline, then "Prior findings:" and the Wave 1 replies):
+    root_cause_agent, impact_agent
+  Wave 3 (inquiry = the timeline, then "Prior findings:" and all earlier replies):
+    recommendation_agent
+
+Each specialist replies with a JSON object. Then assemble the final answer:
+- "situation"      <- operational_state_agent finding
+- "root_cause"     <- root_cause_agent finding
+- "impact"         <- impact_agent finding
+- "recommendation" <- recommendation_agent summary
+- "agent_results"  <- one entry per specialist, with "agent" set to exactly
+  observation, correlation, operational_state, root_cause, impact or
+  recommendation, and finding / evidence / confidence / recommendation copied
+  from that specialist's reply, status "Completed"
+- "day_of_action", "planning_insight", "capex_insight" <- from recommendation_agent
+
+Output rules:
+- Output ONLY the JSON object described by the response contract in the user message.
+- No markdown fences, no prose before or after.
+- Never invent events that are not in the timeline.
+""",
+            "tools": [
+                "observation_agent",
+                "correlation_agent",
+                "operational_state_agent",
+                "root_cause_agent",
+                "impact_agent",
+                "recommendation_agent"
+            ]
+        },
+
+        {
+            "name": "observation_agent",
+            "function": {
+                "description": "Interprets multimodal operational events and summarises what each channel observed.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "inquiry": {"type": "string", "description": "The operational timeline and any prior findings."}
+                    },
+                    "required": ["inquiry"]
+                }
+            },
+            "instructions": """
+You are the Observation Agent. Interpret the multimodal operational events.
+Summarise what the digital, video/physical, ERP and IoT channels each observed for
+the service job, and name the moments flagged as exceptions.
+
+Be concise: findings under 35 words, evidence items under 15 words.
+Reply with JSON only:
+{"finding": "<one or two sentences>", "evidence": ["HH:MM SOURCE description", ...up to 4],
+ "confidence": <0-1>, "recommendation": "<one short sentence>"}
+""",
+            "command": "Interpret the operational events in the inquiry."
+        },
+
+        {
+            "name": "correlation_agent",
+            "function": {
+                "description": "Connects digital, physical and system evidence that describe the same operational moment.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "inquiry": {"type": "string", "description": "The operational timeline and prior findings."}
+                    },
+                    "required": ["inquiry"]
+                }
+            },
+            "instructions": """
+You are the Correlation Agent. Connect digital, physical and system evidence.
+Identify where independent channels describe the same moment (confirmation) and
+where they jointly reveal one exception (for example a digital wait, an equipment
+signal and a long gap in video at the same time).
+
+Be concise: findings under 35 words, evidence items under 15 words.
+Reply with JSON only:
+{"finding": "<one or two sentences>", "evidence": ["<linked signals>", ...up to 3],
+ "confidence": <0-1>, "recommendation": "<one short sentence>"}
+""",
+            "command": "Correlate the evidence in the inquiry."
+        },
+
+        {
+            "name": "operational_state_agent",
+            "function": {
+                "description": "Determines the current operating state of the bay and the job.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "inquiry": {"type": "string", "description": "The operational timeline and prior findings."}
+                    },
+                    "required": ["inquiry"]
+                }
+            },
+            "instructions": """
+You are the Operational State Agent. Determine the operating state of the bay and
+the service job: what is happening, in plain business language a service-center
+manager would use. Mention durations from the timeline.
+
+Be concise: findings under 35 words, evidence items under 15 words.
+Reply with JSON only:
+{"finding": "<what is happening, one or two sentences>", "evidence": ["..."],
+ "confidence": <0-1>, "recommendation": "<one short sentence>"}
+""",
+            "command": "Determine the operating state for the inquiry."
+        },
+
+        {
+            "name": "root_cause_agent",
+            "function": {
+                "description": "Evaluates the contributing factors behind operational exceptions.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "inquiry": {"type": "string", "description": "The operational timeline and prior findings."}
+                    },
+                    "required": ["inquiry"]
+                }
+            },
+            "instructions": """
+You are the Root Cause Agent. Explain WHY the exception happened, using only the
+evidence in the timeline. Name the constraint (equipment, people, process or
+system) and say which channels support the conclusion.
+
+Be concise: findings under 35 words, evidence items under 15 words.
+Reply with JSON only:
+{"finding": "<why it is happening, one or two sentences>", "evidence": ["..."],
+ "confidence": <0-1>, "recommendation": "<one short sentence>"}
+""",
+            "command": "Evaluate the root cause for the inquiry."
+        },
+
+        {
+            "name": "impact_agent",
+            "function": {
+                "description": "Evaluates operational and business impact.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "inquiry": {"type": "string", "description": "The operational timeline and prior findings."}
+                    },
+                    "required": ["inquiry"]
+                }
+            },
+            "instructions": """
+You are the Impact Agent. Evaluate the operational and business impact: service
+time versus a typical 45-minute bay turnaround, knock-on effect on following
+appointments, bay capacity and customer satisfaction signals in the timeline.
+Use ONLY the "Measured stage durations" given in the inquiry for any time
+figure; state the overrun as measured duration minus 45 minutes.
+
+Be concise: findings under 35 words, evidence items under 15 words.
+Reply with JSON only:
+{"finding": "<what the impact is, one or two sentences>", "evidence": ["..."],
+ "confidence": <0-1>, "recommendation": "<one short sentence>"}
+""",
+            "command": "Evaluate the impact for the inquiry."
+        },
+
+        {
+            "name": "recommendation_agent",
+            "function": {
+                "description": "Generates next-best-action options across day-of, planning and CapEx horizons.",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "inquiry": {"type": "string", "description": "The operational timeline and prior findings."}
+                    },
+                    "required": ["inquiry"]
+                }
+            },
+            "instructions": """
+You are the Recommendation Agent. Using the prior findings, generate next-best
+actions for three decision horizons:
+- Day-of execution: operational intervention, workload reassignment, exception
+  handling, immediate throughput improvement.
+- Forecasting & planning: what happens if the pattern continues — capacity,
+  staffing, scheduling impact, future bottleneck.
+- CapEx / budgeting: whether recurring evidence justifies investment — added
+  capacity, automation, equipment, facility/process redesign.
+Label any figure that is an estimate as "est.". Give at most two metrics per
+horizon, with short plain-English labels such as "Recoverable today" (no
+underscores), and values such as "~15 min (est.)".
+
+Be concise: findings under 35 words, evidence items under 15 words.
+Reply with JSON only:
+{"finding": "<one sentence>", "evidence": ["..."], "confidence": <0-1>,
+ "recommendation": "<one-sentence overall recommendation>",
+ "day_of_action":    {"headline": "...", "actions": ["...", 3-4 items], "metrics": {"<label>": "<value>"}},
+ "planning_insight": {"headline": "...", "actions": ["..."], "metrics": {"<label>": "<value>"}},
+ "capex_insight":    {"headline": "...", "actions": ["..."], "metrics": {"<label>": "<value>"}}}
+""",
+            "command": "Generate recommendations for the inquiry."
+        }
+    ]
+}

@@ -1,0 +1,30 @@
+section,metric,value,unit,what_it_means,reliability
+1. The basics,How long the car was in the bay,17.09,minutes,Start of the first frame to the end of the last one.,High
+1. The basics,Time something was actually happening,2.08,minutes,"The bay was busy: work, setup, cleanup, handover.",Medium
+1. The basics,Time nothing was moving,15.01,minutes,Camera saw no activity. This is the waste.,Upper bound
+1. The basics,Number of steps in the job,13,steps,How many times the job changed from one activity to another.,High
+2. Where the time went,Useful work the customer pays for,0.5,minutes,"Lifting, removing wheels, fitting tyres, torquing, checking.",Medium
+2. Where the time went,"Needed, but the customer gains nothing",1.58,minutes,"Setting out tools, inspecting, lowering the lift, cleanup, handover.",Medium
+2. Where the time went,Pure waste,15.01,minutes,Waiting and idling. Nothing was gained from this time.,Upper bound
+2. Where the time went,Useful work as a share of the job,2.9,%,Only about a third of the time added value.,Medium
+2. Where the time went,Waste as a share of the job,87.8,%,Nearly half the time the bay was tied up for nothing.,Upper bound
+3. The waiting problem,Total waiting during the job,14.67,minutes,Added up across every pause while the car was being worked on.,Upper bound
+3. The waiting problem,How many separate pauses,6,pauses,"The waiting is broken into many small gaps, not one long stall.",Medium
+3. The waiting problem,Average pause length,2.44,minutes,Each interruption cost roughly this much.,Medium
+3. The waiting problem,Longest single pause,9.75,minutes,The worst single gap in the whole job.,Medium
+3. The waiting problem,When the longest pause started,13:20:12,clock time,Worth asking the shop what happens at this moment.,High
+3. The waiting problem,Waiting while wheels were coming off,0,minutes,Gaps between bursts of wheel-removal work.,Inferred phase
+3. The waiting problem,Waiting while new tyres went on,0,minutes,Gaps between bursts of tyre-fitting work.,Inferred phase
+3. The waiting problem,Car finished but still parked in the bay,0.0,minutes,"Job done, lift down, waiting to be handed back. Separate problem, separate owner.",Medium
+4. Equipment and bay,Bay occupied,99.0,%,The bay was unavailable to anyone else for almost the whole window.,High
+4. Equipment and bay,Car held up on the lift,0.0,minutes,The lift was committed this long to deliver the work above.,High
+4. Equipment and bay,Share of time spent on hands-on service,0.0,%,"Measured from service work, not from spotting people, because the overhead view rarely detects them.",Medium
+5. Biggest problems,Problem 1: Low Activity / Waiting,13.75,minutes,"Happened 3 time(s); longest single stretch 9.75 min. Ranked on total time lost, not on the longest one-off.",Upper bound
+5. Biggest problems,Problem 2: Technician / Tool Setup,1.58,minutes,"Happened 4 time(s); longest single stretch 0.58 min. Ranked on total time lost, not on the longest one-off.",Medium
+5. Biggest problems,Problem 3: Technician Away From Bay,0.92,minutes,"Happened 3 time(s); longest single stretch 0.42 min. Ranked on total time lost, not on the longest one-off.",Upper bound
+6. How much to trust this,Vehicle type,Car,-,"From the detector's COCO class. COCO has no Sedan/SUV distinction and the overhead view cannot see vehicle height, so this is as specific as detection gets -- set VEHICLE_TYPE_OVERRIDE for the real body style.",Low
+6. How much to trust this,Activities seen out of the full list,6 of 20,activities,Missing ones either did not happen in this window or cannot be seen from this camera angle.,High
+6. How much to trust this,Frames where a person was detected,0.0,%,"The camera looks straight down, so people appear as head and shoulders and are usually missed. Anything counting technicians is unreliable.",Low
+6. How much to trust this,Is the waiting figure exact?,No,-,"It measures 'nothing moved'. Someone standing still to tighten bolts looks the same as an empty bay, so treat waiting as a worst case.",Upper bound
+6. How much to trust this,Is 'wheels off' vs 'tyres on' actually measured?,No,-,"The time on the lift is measured, but splitting it into removal and fitting is an assumption. Gap timings are real; which half they fall in is not.",Inferred phase
+6. How much to trust this,Are the per-tyre steps measured?,No,-,"Tyre 1-4 rows divide the lift time into equal slices. The wheels on the car are never visible from above, so individual tyres cannot be timed.",Inferred split

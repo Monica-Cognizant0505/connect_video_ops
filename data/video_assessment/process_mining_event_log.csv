@@ -1,0 +1,14 @@
+case_id,vehicle_type,vehicle_type_evidence,step_no,level,evidence,is_key_metric_activity,activity,activity_category,value_type,start_time,end_time,duration_seconds,duration_minutes,frames,avg_person_count,avg_motion_score,lift_raised,is_long_wait,confidence
+JOB_001,Car,measured_coco,1,activity,measured,False,Vehicle Entering Bay,Vehicle Handling,Pure Non-Value Added,13:17:17,13:17:27,10,0.17,2,0.0,12.06,False,False,0.508
+JOB_001,Car,measured_coco,2,activity,measured,False,Bay Empty / Awaiting Vehicle,Idle / Unclear,Pure Non-Value Added,13:17:27,13:17:37,10,0.17,2,0.0,30.88,False,False,0.693
+JOB_001,Car,measured_coco,3,activity,measured,True,Vehicle Entered Bay / Positioned,Vehicle Handling,Value Added,13:17:37,13:18:07,30,0.5,6,0.0,6.7,False,False,0.622
+JOB_001,Car,measured_coco,4,activity,measured,True,Low Activity / Waiting,Idle / Unclear,Pure Non-Value Added,13:18:07,13:18:27,20,0.33,4,0.0,5.37,False,False,0.735
+JOB_001,Car,measured_coco,5,activity,measured,True,Technician / Tool Setup,Support Work,Necessary but Non-Value Added,13:18:27,13:18:57,30,0.5,6,0.0,5.12,False,False,0.68
+JOB_001,Car,measured_coco,6,activity,measured,False,Technician Away From Bay,Support Work,Pure Non-Value Added,13:18:57,13:19:22,25,0.42,5,0.0,12.23,False,False,0.679
+JOB_001,Car,measured_coco,7,activity,measured,True,Technician / Tool Setup,Support Work,Necessary but Non-Value Added,13:19:22,13:19:57,35,0.58,7,0.0,6.8,False,False,0.799
+JOB_001,Car,measured_coco,8,activity,measured,False,Technician Away From Bay,Support Work,Pure Non-Value Added,13:19:57,13:20:12,15,0.25,3,0.0,2.91,False,False,0.862
+JOB_001,Car,measured_coco,9,activity,measured,True,Low Activity / Waiting,Idle / Unclear,Pure Non-Value Added,13:20:12,13:29:57,585,9.75,117,0.0,2.72,False,False,0.803
+JOB_001,Car,measured_coco,10,activity,measured,True,Technician / Tool Setup,Support Work,Necessary but Non-Value Added,13:29:57,13:30:17,20,0.33,4,0.0,5.02,False,False,0.543
+JOB_001,Car,measured_coco,11,activity,measured,False,Technician Away From Bay,Support Work,Pure Non-Value Added,13:30:17,13:30:32,15,0.25,3,0.0,1.42,False,False,0.592
+JOB_001,Car,measured_coco,12,activity,measured,True,Low Activity / Waiting,Idle / Unclear,Pure Non-Value Added,13:30:32,13:34:12,220,3.67,44,0.0,2.67,False,False,0.625
+JOB_001,Car,measured_coco,13,activity,measured,True,Technician / Tool Setup,Support Work,Necessary but Non-Value Added,13:34:12,13:34:22,10,0.17,2,0.0,39.45,False,False,0.319

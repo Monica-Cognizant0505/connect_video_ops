@@ -1,0 +1,10 @@
+# Connected IT and Operations Intelligence - Streamlit app (Streamlit Cloud compatible).
+# The app runs fully in Demo Mode with only these packages.
+streamlit>=1.50
+pandas>=2.0
+pydantic>=2.5
+Pillow>=10.0
+requests>=2.31
+
+# Optional: to call Neuro SAN IN-PROCESS (NEURO_SAN_MODE=direct) instead of over
+# HTTP, also install requirements-neuro-san.txt. Not needed for Streamlit Cloud.

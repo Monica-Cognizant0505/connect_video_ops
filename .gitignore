@@ -1,0 +1,25 @@
+# Secrets — never commit. Contains AZURE_OPENAI_API_KEY.
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Neuro SAN / Streamlit runtime artifacts
+logs/
+outputs/
+*.log
+nss_local.db
+.streamlit/secrets.toml
+
+# Editor / OS / local tooling
+.claude/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

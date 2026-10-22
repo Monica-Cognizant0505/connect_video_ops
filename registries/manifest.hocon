@@ -1,0 +1,10 @@
+# Neuro SAN agent manifest for the Connected IT and Operations Intelligence demo.
+#
+# Maps each served agent-network HOCON (path relative to this registries/ dir)
+# to a boolean. The agent name used to address a network is its path minus the
+# .hocon extension, e.g. "phygital_operations_intelligence".
+#
+# Reference: https://github.com/cognizant-ai-lab/neuro-san/blob/main/docs/manifest_hocon_reference.md
+{
+    "phygital_operations_intelligence.hocon": true
+}
