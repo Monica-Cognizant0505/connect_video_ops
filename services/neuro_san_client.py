@@ -335,7 +335,7 @@ class DirectNeuroSANClient(NeuroSANClient):
     def _configure_runtime() -> None:
         """Point neuro-san at this project's manifest and export Azure credentials."""
         os.environ.setdefault("AGENT_MANIFEST_FILE", str(PROJECT_DIR / "registries" / "manifest.hocon"))
-        os.environ.setdefault("AGENT_TOOL_PATH", str(PROJECT_DIR / "coded_tools"))
+        os.environ.setdefault("AGENT_TOOL_PATH", str(PROJECT_DIR / "phygital_coded_tools"))
         parts = [p for p in os.environ.get("PYTHONPATH", "").split(os.pathsep) if p]
         if str(PROJECT_DIR) not in parts:
             os.environ["PYTHONPATH"] = os.pathsep.join([*parts, str(PROJECT_DIR)])

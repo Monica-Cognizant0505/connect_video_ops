@@ -36,11 +36,7 @@ import json
 import os
 import sys
 
-# $NEURO_SAN_STUDIO_REPO, else a "neuro-san-studio" folder next to this project.
-DEFAULT_STUDIO_REPO = os.environ.get("NEURO_SAN_STUDIO_REPO") or os.path.join(
-    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
-    "neuro-san-studio",
-)
+DEFAULT_STUDIO_REPO = r"C:\Users\2065538\Costco\neuro-san-studio"
 
 
 def main() -> int:

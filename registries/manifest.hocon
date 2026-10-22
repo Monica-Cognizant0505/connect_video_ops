@@ -1,8 +1,11 @@
-# Neuro SAN agent manifest for the Connected IT and Operations Intelligence demo.
+# Neuro SAN agent manifest for the Service Operations Bay Optimization demo.
 #
 # Maps each served agent-network HOCON (path relative to this registries/ dir)
 # to a boolean. The agent name used to address a network is its path minus the
-# .hocon extension, e.g. "phygital_operations_intelligence".
+# .hocon extension, e.g. "service_operations_bay_optimization".
+#
+# Display name in Neuro SAN Studio / nsflow: Service Operations Bay Optimization
+# (taken from the network's metadata.description).
 #
 # Reference: https://github.com/cognizant-ai-lab/neuro-san/blob/main/docs/manifest_hocon_reference.md
 {

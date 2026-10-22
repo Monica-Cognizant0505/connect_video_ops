@@ -131,7 +131,7 @@ class SourceConfig:
 
 
 SOURCES: Dict[str, SourceConfig] = {
-    "digital": SourceConfig("digital", "Soroco / Digital", "DIGITAL_WORK_API_URL", "DIGITAL_WORK_API_KEY"),
+    "digital": SourceConfig("digital", "Digital / Soroco", "DIGITAL_WORK_API_URL", "DIGITAL_WORK_API_KEY"),
     "video": SourceConfig("video", "Video AI", "VIDEO_AI_API_URL", "VIDEO_AI_API_KEY"),
     "erp": SourceConfig("erp", "ERP", "ERP_API_URL", "ERP_API_KEY"),
     "iot": SourceConfig("iot", "IoT", "IOT_API_URL", "IOT_API_KEY"),

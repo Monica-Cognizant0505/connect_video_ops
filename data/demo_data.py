@@ -213,6 +213,19 @@ FRAME_OBSERVATIONS: List[Dict[str, Any]] = [
 ]
 
 # --------------------------------------------------------------------------- #
+#  TIME-MOTION BAR TOTALS  (illustrative, from the "Nearly half the job is
+#  waiting" presentation slide: 50-min job). The Video Time-Motion bar keeps the
+#  selected case's activity order and scales each category to these minutes.
+#  Set to {} to draw the case's own segment durations instead.
+# --------------------------------------------------------------------------- #
+
+TIME_MOTION_TOTALS: Dict[str, float] = {
+    "Value Added": 15.7,                    # useful work - core activities
+    "Necessary but Non-Value Added": 11.3,  # needed, no value to customer
+    "Pure Non-Value Added": 23.4,           # waiting and idle time
+}
+
+# --------------------------------------------------------------------------- #
 #  NEURO SAN AGENTS  (display order = execution order in the UI)
 # --------------------------------------------------------------------------- #
 

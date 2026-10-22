@@ -16,10 +16,3 @@ outputs/
 *.log
 nss_local.db
 .streamlit/secrets.toml
-
-# Editor / OS / local tooling
-.claude/
-.vscode/
-.idea/
-.DS_Store
-Thumbs.db

@@ -12,10 +12,6 @@
 #     .\run_nsflow.ps1                                   # server 8095, nsflow 4190
 #     .\run_nsflow.ps1 -ServerPort 8100 -NsflowPort 4200
 #     .\run_nsflow.ps1 -ServerOnly                       # no web UI
-#     .\run_nsflow.ps1 -StudioRepo C:\path\to\neuro-san-studio
-#
-# -StudioRepo defaults to $env:NEURO_SAN_STUDIO_REPO, else a "neuro-san-studio"
-# folder next to this project.
 #
 # NOTE: this is only for exploring the network in nsflow. The Streamlit dashboard
 # (`python -m streamlit run app.py`) does NOT need it — the dashboard opens
@@ -26,13 +22,8 @@ param(
     [int]$ServerPort = 8095,
     [int]$NsflowPort = 4190,
     [switch]$ServerOnly,
-    [string]$StudioRepo = ''
+    [string]$StudioRepo = 'C:\Users\2065538\Costco\neuro-san-studio'
 )
-
-if (-not $StudioRepo) {
-    $StudioRepo = if ($env:NEURO_SAN_STUDIO_REPO) { $env:NEURO_SAN_STUDIO_REPO }
-                  else { Join-Path (Split-Path $PSScriptRoot -Parent) 'neuro-san-studio' }
-}
 
 $ErrorActionPreference = 'Stop'
 Set-Location -Path $PSScriptRoot
@@ -109,7 +100,7 @@ $manifest = Join-Path $PSScriptRoot 'registries\manifest.hocon'
 # These are the same variables services/neuro_san_client.py sets for the
 # in-process Streamlit session.
 $env:AGENT_MANIFEST_FILE = $manifest
-$env:AGENT_TOOL_PATH = Join-Path $PSScriptRoot 'coded_tools'
+$env:AGENT_TOOL_PATH = Join-Path $PSScriptRoot 'phygital_coded_tools'
 
 # PYTHONPATH is not optional: neuro-san maps the absolute AGENT_TOOL_PATH onto a
 # dotted module path and imports the coded tools through it. Without the project

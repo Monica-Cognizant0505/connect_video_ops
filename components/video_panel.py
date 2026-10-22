@@ -10,13 +10,12 @@ import streamlit as st
 from components.assessment_panel import (
     assessment_badge,
     render_assessment,
-    render_methodology,
-    render_transition,
     subsection,
 )
 from components.theme import ORANGE, SOURCE_COLORS, demo_tag, esc, render_html, section_header
 from models.evidence import EvidenceEvent
 from services.http_events import IntegrationError
+from services.workbook_evidence import SHEET_VIDEO, ScenarioEvidence, video_assessment
 from services.video_analyzer import (
     FRAMES_DIR,
     PLACEHOLDER_SLOTS,
@@ -45,7 +44,9 @@ def run_video_analysis(demo_mode: bool, frames: Optional[List[Path]] = None, on_
     return apply_service_duration_rule(events)
 
 
-def render_video_panel(demo_mode: bool, video_live: bool, provider_label: str = "") -> None:
+def render_video_panel(
+    demo_mode: bool, video_live: bool, provider_label: str = "", workbook: Optional[ScenarioEvidence] = None
+) -> None:
     color = SOURCE_COLORS["VIDEO"]
     tag = assessment_badge() + (" " + demo_tag("Demo observations") if not video_live else "")
     section_header(
@@ -55,9 +56,16 @@ def render_video_panel(demo_mode: bool, video_live: bool, provider_label: str = 
         accent=color,
         tag=tag,
     )
-    render_methodology()
-    render_assessment()
-
+    video = None
+    if workbook is not None and workbook.available:
+        render_html(
+            f"<div style='font-size:0.95rem;font-weight:700;color:{color};margin:-0.4rem 0 0.7rem 0'>"
+            f"What happened in the physical workflow for this unit of work?</div>"
+        )
+        if workbook.video is None:
+            st.warning(f"{workbook.issue(SHEET_VIDEO)} Showing the standalone video assessment instead.")
+        else:
+            video = video_assessment(workbook)
     subsection("Video Evidence Drill-Down", "Supporting physical evidence from the selected operational case.")
     frames = list_video_frames()
     slots = len(frames) or PLACEHOLDER_SLOTS
@@ -123,7 +131,7 @@ def render_video_panel(demo_mode: bool, video_live: bool, provider_label: str = 
         else:
             st.caption("Run Analyze Physical Operation to generate the frame-by-frame observations.")
 
-    render_transition()
+    render_assessment(video)
 
 
 def _paced(callback, demo_mode: bool):

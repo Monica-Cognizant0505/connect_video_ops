@@ -41,9 +41,8 @@ def render_neuro_san_panel(
         tag=tag,
     )
 
-    channels = sorted({e.source.value for e in context.correlated_timeline})
-    left, right = st.columns([3, 1])
-    with left:
+    with st.expander("Operational context, agent progress and how Neuro SAN reached its findings"):
+        channels = sorted({e.source.value for e in context.correlated_timeline})
         render_html(
             f"""
             <div class="card" style="border-left:5px solid {ORANGE};padding:0.75rem 1rem">
@@ -54,40 +53,35 @@ def render_neuro_san_panel(
             </div>
             """
         )
-    with right:
-        clicked = st.button("Run Neuro SAN Analysis", key="run_neuro_san", type="primary", width="stretch")
-    states: Dict[str, AgentResult] = {
-        r.agent: r for r in (result.agent_results if result else [])
-    }
-    strip = st.empty()
-    strip.markdown(_strip_html(agents, states, finished=result is not None), unsafe_allow_html=True)
+        states: Dict[str, AgentResult] = {
+            r.agent: r for r in (result.agent_results if result else [])
+        }
+        strip = st.empty()
+        strip.markdown(_strip_html(agents, states, finished=result is not None), unsafe_allow_html=True)
 
-    if clicked:
-        live: Dict[str, AgentResult] = {}
+        # Runs automatically (no button) whenever there is no current result.
+        if result is None:
+            live: Dict[str, AgentResult] = {}
 
-        def on_progress(agent_result: AgentResult) -> None:
-            live[agent_result.agent] = agent_result
-            strip.markdown(_strip_html(agents, live, finished=False), unsafe_allow_html=True)
+            def on_progress(agent_result: AgentResult) -> None:
+                live[agent_result.agent] = agent_result
+                strip.markdown(_strip_html(agents, live, finished=False), unsafe_allow_html=True)
 
-        run(on_progress)
-        st.rerun()
+            run(on_progress)
+            st.rerun()
 
-    if result and result.error:
-        st.error(f"Neuro SAN analysis failed: {result.error}")
-    st.session_state["_ns_details"] = (agents, states, result is not None, context, backend_label)
-
-
-def render_agent_details() -> None:
-    """Expander with the full per-agent trace. Call after the assessment so outcomes stay the focus."""
-    details = st.session_state.get("_ns_details")
-    if not details or not details[2]:
-        return
-    agents, states, finished, context, backend_label = details
-    with st.expander("How Neuro SAN reached this — agent findings, evidence and confidence"):
-        st.markdown(_pipeline_html(agents, states, finished=finished), unsafe_allow_html=True)
+        # Full per-agent trace, inline (Streamlit does not allow nested expanders).
+        render_html(
+            f"<div style='font-weight:800;color:{NAVY};margin-top:1rem'>"
+            f"How Neuro SAN reached this — agent findings, evidence and confidence</div>"
+        )
+        st.markdown(_pipeline_html(agents, states, finished=True), unsafe_allow_html=True)
         st.caption(f"Backend: {backend_label}")
         st.markdown("**OperationalContext sent to Neuro SAN**")
         st.json(context.model_dump(mode="json"), expanded=1)
+
+    if result and result.error:
+        st.error(f"Neuro SAN analysis failed: {result.error}")
 
 
 def _strip_html(agents: List[Dict[str, str]], states: Dict[str, AgentResult], finished: bool) -> str:
@@ -110,7 +104,7 @@ def _strip_html(agents: List[Dict[str, str]], states: Dict[str, AgentResult], fi
     if running:
         activity = " · ".join(f"<b>{esc(a['name'])}</b> — {esc(a['activity'])}" for a in running)
     elif finished and states:
-        activity = "Analysis complete — assessment and decisions below."
+        activity = "Analysis complete — decisions below."
     else:
         activity = "Six specialist agents are ready to analyse the operational context."
     arrow = "<span class='ns-arrow'>→</span>"

@@ -77,9 +77,12 @@ def render_story() -> None:
         <div class="story">
           <div class="story-steps">{arrow.join(steps)}</div>
           <div class="story-flow">
-            <span style="color:#2563EB;font-weight:700">Digital Work</span> +
-            <span style="color:#7C3AED;font-weight:700">Physical Operations</span> +
-            <span style="color:#059669;font-weight:700">Enterprise Data</span><br/>
+            <span style="color:#2563EB;font-weight:700">Digital Work</span>
+            <span style="color:#2563EB;font-size:0.85rem">(Soroco Task Mining)</span> +
+            <span style="color:#7C3AED;font-weight:700">Physical Operations</span>
+            <span style="color:#7C3AED;font-size:0.85rem">(Video Analytics)</span> +
+            <span style="color:#059669;font-weight:700">Enterprise Data</span>
+            <span style="color:#059669;font-size:0.85rem">(ERP / POS · IoT / Equipment)</span><br/>
             ↓<br/><span class="ns">Neuro SAN</span><br/>↓<br/>
             <b style="color:{NAVY}">Day-of Execution &nbsp;|&nbsp; Planning &nbsp;|&nbsp; CapEx</b>
           </div>

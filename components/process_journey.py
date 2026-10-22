@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 import streamlit as st
 
-from components.theme import BORDER, MUTED, NAVY, ORANGE, badges, demo_tag, esc, render_html
+from components.theme import BORDER, MUTED, NAVY, ORANGE, RED, badges, demo_tag, esc, render_html
 
 
 def render_header() -> None:
@@ -42,9 +42,14 @@ def _select_stage(stage_id: int) -> None:
     st.session_state.selected_stage = stage_id
 
 
-def render_journey(stages: List[Dict[str, Any]], selected: int) -> None:
-    """Connected, clickable stage cards. Click a card to drive every section below."""
-    _journey_css(len(stages), selected)
+def render_journey(
+    stages: List[Dict[str, Any]], selected: int, exception_stage: Optional[int] = None, exception_label: str = ""
+) -> None:
+    """Connected, clickable stage cards. Click a card to drive every section below.
+
+    ``exception_stage`` marks the stage where the selected scenario shows an operational signal.
+    """
+    _journey_css(len(stages), selected, exception_stage)
     cols = st.columns(len(stages), gap="small")
     for col, stage in zip(cols, stages):
         with col:
@@ -58,6 +63,8 @@ def render_journey(stages: List[Dict[str, Any]], selected: int) -> None:
                     width="stretch",
                 )
                 render_html(f'<div class="stage-badges">{badges(stage["channels"])}</div>')
+                if stage["id"] == exception_stage and exception_label:
+                    render_html(f'<div class="stage-exc">⚠ {esc(exception_label)}</div>')
 
     selected_stage = next(s for s in stages if s["id"] == selected)
     render_html(
@@ -71,8 +78,15 @@ def render_journey(stages: List[Dict[str, Any]], selected: int) -> None:
     )
 
 
-def _journey_css(count: int, selected: int) -> None:
+def _journey_css(count: int, selected: int, exception_stage: Optional[int] = None) -> None:
     last = count
+    exception_css = (
+        f"div.st-key-stage_{exception_stage} {{ outline: 2px dashed {RED}; outline-offset: 3px; }}"
+        f".stage-exc {{ margin-top: 0.3rem; padding: 0.25rem 0.4rem; background: #FEF2F2; border: 1px solid #FECACA;"
+        f" border-radius: 6px; color: {RED}; font-size: 0.68rem; font-weight: 700; line-height: 1.25; }}"
+        if exception_stage
+        else ""
+    )
     render_html(
         f"""
 <style>
@@ -103,6 +117,7 @@ div.st-key-stage_{selected} {{ border: 2px solid {ORANGE} !important; background
 div.st-key-stage_{selected} .stage-num {{ background: {ORANGE}; }}
 .journey-selected {{ margin-top: 0.8rem; padding: 0.6rem 0.9rem; background: #F8FAFC; border: 1px solid {BORDER};
                      border-radius: 10px; color: {NAVY}; font-size: 0.95rem; }}
+{exception_css}
 </style>
 """
     )

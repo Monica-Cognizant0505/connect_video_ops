@@ -17,13 +17,15 @@ from typing import Dict, List, Tuple
 
 import streamlit as st
 
+from components.assessment_panel import render_transition
 from components.correlation_timeline import render_correlation
-from components.decision_panel import render_decisions, render_horizon_banner, render_story
+from components.decision_panel import render_decisions, render_story
 from components.digital_panel import render_digital_panel
 from components.evidence_panel import render_evidence_panel
-from components.neuro_san_panel import render_agent_details, render_assessment, render_neuro_san_panel
+from components.neuro_san_panel import render_neuro_san_panel
 from components.process_journey import render_header, render_journey
 from components.theme import inject_global_css, section_header
+from components.unit_of_work import render_unit_of_work
 from components.video_panel import render_video_panel, run_video_analysis
 from data import demo_data
 from models.evidence import EvidenceEvent
@@ -33,6 +35,7 @@ from services.digital_evidence_provider import get_digital_evidence
 from services.enterprise_evidence_provider import get_enterprise_evidence, get_iot_evidence, get_physical_evidence
 from services.http_events import IntegrationError
 from services.neuro_san_client import get_neuro_san_client, preload_runtime, run_neuro_san
+from services.workbook_evidence import SCENARIO, load_scenario
 
 st.set_page_config(
     page_title="Connected IT and Operations Intelligence",
@@ -178,7 +181,6 @@ def main() -> None:
         st.session_state.neuro_result = run_neuro_san(run_context, on_progress=on_progress, demo_mode=demo_mode)
 
     # --- Intelligence and decisions first ---------------------------------
-    render_horizon_banner()
     render_neuro_san_panel(
         demo_data.AGENTS,
         context,
@@ -187,17 +189,23 @@ def main() -> None:
         is_demo_backend=client.is_demo,
         run=run,
     )
-    render_assessment(st.session_state.neuro_result)
     render_decisions(st.session_state.neuro_result)
-    render_agent_details()
 
     # --- The operation and evidence behind them ---------------------------
+    # Selected scenario from the synthetic task-mining + video workbook (data/).
+    workbook = load_scenario(SCENARIO)
+
     section_header("End-to-End Business Journey", "The operation and evidence behind the assessment — select a stage")
     render_journey(stages, selected)
     render_evidence_panel(stage, evidence, video_analyzed=bool(video_events))
-    render_video_panel(demo_mode, video_live=is_live("video", demo_mode), provider_label=source_detail("video", demo_mode))
-    render_digital_panel(base["digital"], case["service_date"], digital_live=is_live("digital", demo_mode))
-    render_correlation(context, stages, case["service_date"], video_analyzed=bool(video_events))
+    # Unit of Work bridges the journey and the detailed physical -> digital -> combined assessments.
+    render_unit_of_work(workbook)
+    render_video_panel(demo_mode, video_live=is_live("video", demo_mode), provider_label=source_detail("video", demo_mode),
+                       workbook=workbook)
+    render_digital_panel(base["digital"], case["service_date"], digital_live=is_live("digital", demo_mode), workbook=workbook)
+    # "Now let's understand why" bridge into the connected-evidence (correlation) section.
+    render_transition()
+    render_correlation(context, stages, case["service_date"], video_analyzed=bool(video_events), workbook=workbook)
     render_story()
 
 main()

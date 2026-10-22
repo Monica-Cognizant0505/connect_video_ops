@@ -5,31 +5,10 @@ digital work, physical (video) operations, ERP and IoT evidence are correlated
 into one operational context, and Neuro SAN agents turn it into decisions for
 **Day-of Execution**, **Forecasting & Planning** and **CapEx / Budgeting**.
 
-## Quick start
-
-Requires Python 3.10+ (developed on 3.13).
-
 ```bash
-git clone <repo-url>
-cd <repo-folder>
-python -m venv .venv
-.venv\Scripts\activate          # macOS/Linux: source .venv/bin/activate
 pip install -r requirements.txt
 streamlit run app.py
 ```
-
-On Windows you can use the helper scripts instead:
-
-```powershell
-.\setup.ps1              # creates .venv, installs app + neuro-san, verifies the network
-.\setup.ps1 -DemoOnly    # Streamlit only
-.\run_app.ps1 -Demo      # Demo Mode
-.\run_app.ps1            # live Azure / in-process Neuro SAN
-```
-
-For live mode, copy `.streamlit/secrets.toml.example` to `.streamlit/secrets.toml`
-(or `.env.example` to `.env`) and fill in your Azure OpenAI values. Both files
-are git-ignored. Never commit real keys.
 
 The app runs fully in **Demo Mode** with no backend, Soroco, CV model, ERP or IoT
 connection. All demo content is labelled in the UI.
@@ -59,20 +38,27 @@ services/
   correlation_engine.py        unified timeline + OperationalContext
   neuro_san_client.py          run_neuro_san(context) -> NeuroSANResult
   http_events.py               shared HTTP helper for live sources
-  video_assessment.py          process-mining KPIs from data/video_assessment/*.csv
+  workbook_evidence.py         reads the synthetic task-mining + video workbook per scenario
+  video_assessment.py          video segment classification / assessment CSVs
   azure_openai.py              Azure OpenAI client (GPT-4o vision)
 models/                        Pydantic: EvidenceEvent, OperationalContext, AgentResult, NeuroSANResult
 data/demo_data.py              ALL demo values (KPIs, events, frame observations, sample assessment)
-data/video_assessment/         process-mining event log + KPI summary (CSV)
-assets/video_frames/           extracted video frames (processed in filename order)
+data/*.xlsx                    Synthetic_Soroco_TaskMining_Video_Integration_Demo workbook
+data/video_assessment/         process-mining event log + KPI summary CSVs
+assets/video_frames/           put extracted frames here
 registries/                    Neuro SAN manifest + phygital_operations_intelligence.hocon
-coded_tools/                   Neuro SAN coded-tool root (AGENT_TOOL_PATH)
-scripts/                       check_neuro_san.py (verify network), repair_neuro_san_logging.py
-.streamlit/                    theme config + secrets.toml.example
-setup.ps1, run_app.ps1         Windows setup / launch helpers
-run_nsflow.ps1                 optional: Neuro SAN server + nsflow UI (needs neuro-san-studio;
-                               set -StudioRepo or NEURO_SAN_STUDIO_REPO)
+phygital_coded_tools/          AGENT_TOOL_PATH root for Neuro SAN (no coded tools yet)
+scripts/                       check_neuro_san.py, repair_neuro_san_logging.py
+setup.ps1, run_app.ps1         Windows: create venv + install, then run Streamlit
+run_nsflow.ps1                 Windows: run the agent network in nsflow
 ```
+
+## Configuration files
+
+- `.streamlit/secrets.toml.example` → copy to `.streamlit/secrets.toml`
+- `.env.example` → copy to `.env` (Azure OpenAI fallback)
+
+Both real files are git-ignored.
 
 
 ## Video frames
@@ -91,7 +77,7 @@ local `.env` also work as a fallback.
 
 ```toml
 AZURE_API_KEY = "..."
-AZURE_ENDPOINT = "https://<resource>.openai.azure.com/"
+AZURE_ENDPOINT = "https://techmod-azureopenai.openai.azure.com/"
 DEPLOYMENT_NAME = "gpt-4o"
 API_VERSION = "2024-12-01-preview"
 ```

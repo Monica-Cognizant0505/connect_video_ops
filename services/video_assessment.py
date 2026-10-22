@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import csv
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -100,6 +100,24 @@ def activity_stats(segments: List[Segment], activity: str) -> Dict[str, float]:
     """Count and total minutes for one activity name."""
     matching = [s for s in segments if s.activity == activity]
     return {"count": len(matching), "minutes": round(sum(s.minutes for s in matching), 2)}
+
+
+def rescale_segments(segments: List[Segment], totals: Dict[str, float]) -> List[Segment]:
+    """
+    Same activities in the same order, with each classification's durations scaled so the
+    classification sums to ``totals`` (minutes). Segments are laid end to end from the first start.
+    Classifications missing from ``totals`` keep their duration.
+    """
+    current = totals_by_classification(segments)
+    scaled: List[Segment] = []
+    cursor = segments[0].start
+    for seg in segments:
+        target, actual = totals.get(seg.value_type), current.get(seg.value_type, 0)
+        minutes = seg.minutes * target / actual if target is not None and actual else seg.minutes
+        end = cursor + timedelta(minutes=minutes)
+        scaled.append(Segment(seg.activity, seg.value_type, cursor, end, round(minutes, 2)))
+        cursor = end
+    return scaled
 
 
 def totals_by_classification(segments: List[Segment]) -> Dict[str, float]:

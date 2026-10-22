@@ -24,7 +24,7 @@ SOURCE_COLORS = {
     "IoT": "#0D9488",
 }
 SOURCE_LABELS = {
-    "DIGITAL": "Digital",
+    "DIGITAL": "Digital / Soroco",
     "VIDEO": "Video",
     "PHYSICAL": "Physical",
     "ERP": "ERP",
